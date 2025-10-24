@@ -1,0 +1,96 @@
+/* assets/style.css */
+
+/* --- 全局样式 --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h3 {
+    color: #333;
+}
+
+/* --- 布局容器 --- */
+.header-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.main-container {
+    display: flex;
+    flex-wrap: wrap; /* 在小屏幕上换行 */
+    gap: 20px;
+}
+
+.control-panel {
+    flex: 1; /* 占据 1 份空间 */
+    min-width: 350px; /* 最小宽度 */
+}
+
+.output-panel {
+    flex: 2; /* 占据 2 份空间 */
+    min-width: 400px;
+}
+
+/* --- 卡片样式 --- */
+.card-style {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* --- 参数组样式 --- */
+.parameter-group {
+    margin-bottom: 18px;
+}
+
+.parameter-group label {
+    display: block; /* 标签单独占一行 */
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+/* --- 输入框样式 --- */
+.input-field {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box; /* 确保 padding 不会撑大宽度 */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* --- 滑块组样式 --- */
+.slider-label-row {
+    display: flex;
+    justify-content: space-between; /* 标签在左，数值在右 */
+    align-items: center;
+    margin-bottom: 4px; /* 与滑块的间距 */
+}
+
+/* --- 按钮样式 --- */
+.run-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.run-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- 结果区域 --- */
+.results-container {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}

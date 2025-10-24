@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-# 假设 VLE 和 McCabeThiele 类在其他模块中定义
-# from ..thermo.vle import VLE
-# from ..unit_ops.distillation import McCabeThiele
+from ..unit_ops.distillation import McCabeThiele
 
 def plot_vle_txy(vle, title: Optional[str] = None, show: bool = True):
     """
@@ -90,142 +88,132 @@ def plot_vle_yx(vle, title: Optional[str] = None, show: bool = True):
 
 from ..unit_ops.distillation import McCabeThiele
 
-def plot_mccabe_thiele(mt_instance: McCabeThiele, plot_stages: bool = True, title: Optional[str] = None, show: bool = True):
+def plot_mccabe_thiele(mt_instance: McCabeThiele, plot_stages: bool = True, 
+                                      title: Optional[str] = None, show: bool = True):
     """
-    绘制 McCabe-Thiele 图，包括平衡线、操作线和理论塔板。
+    使用 Matplotlib 创建精馏塔的 McCabe-Thiele 图。
 
-    :param mt_instance: McCabeThiele 类的实例。
-    :param plot_stages: 是否绘制理论塔板的梯级图。
-    :param title: 图表标题。
-    :param show: 是否立即显示图像。
+    参数:
+    - mt_instance: McCabeThiele 类的实例
+    - plot_stages (bool): 是否绘制理论塔板的梯级图
+    - title (Optional[str]): 图表标题
+    - show (bool): 是否立即显示图表
+
+    返回:
+    - tuple: (fig, ax) Matplotlib 图形和坐标轴对象
     """
+    # 创建图形和坐标轴
+    fig, ax = plt.subplots(figsize=(10, 10))
     vle = mt_instance.vle
     x_D, x_W, x_F, q = mt_instance.x_D, mt_instance.x_W, mt_instance.x_F, mt_instance.q
-    
-    plt.figure(figsize=(10, 10))
-    
-    # 1. 绘制平衡线和对角线
-    x_continuous = np.linspace(0.0, 1.0, 200)
-    y_continuous = vle.get_y_by_x(x_continuous)
-    plt.plot(x_continuous, y_continuous, 'g-', linewidth=2, label='Equilibrium line (y-x)')
-    plt.plot([0.0, 1.0], [0.0, 1.0], 'k--', linewidth=1, label='Diagonal line (y=x)')
 
-    # 2. 绘制操作线
+    # 1. 准备平衡线数据
+    x_eq = np.linspace(0.0, 1.0, 200)
+    y_eq = vle.get_y_by_x(x_eq)
+    
+    # 绘制平衡线
+    ax.plot(x_eq, y_eq, 'b-', label='Equilibrium Line', linewidth=2)
 
+    # 绘制对角线 (y=x)
+    ax.plot([0, 1], [0, 1], '--', color='grey', label='y=x', linewidth=1.5)
+
+    # 2. 准备并绘制操作线
     # 计算三条线的交点
     if q == 1:
-        # q线为垂直线 x = x_F
         x_int = x_F
         y_int = mt_instance.L_over_V * x_int + mt_instance.D_xD_over_V
     elif q == 0:
-        # q线为水平线 y = x_F
         y_int = x_F
         x_int = (y_int - mt_instance.D_xD_over_V) / mt_instance.L_over_V
     else:
-        # 计算精馏段操作线与q线的交点
-        # 精馏段操作线: y = L_over_V * x + D_xD_over_V
-        # q线: y = q/(q-1) * x - x_F/(q-1)
-        # 联立求解
         x_int = (mt_instance.D_xD_over_V + x_F/(q-1)) / (q/(q-1) - mt_instance.L_over_V)
         y_int = mt_instance.L_over_V * x_int + mt_instance.D_xD_over_V
-
-    # 精馏段操作线：从对角线(x_D, x_D)到交点(x_int, y_int)
-    plt.plot([x_D, x_int], [x_D, y_int], 'b-', linewidth=2, label='Rectifying section OL')
     
-    # 提馏段操作线：从对角线(x_W, x_W)到交点(x_int, y_int)
-    plt.plot([x_W, x_int], [x_W, y_int], 'r-', linewidth=2, label='Stripping section OL')
-    
-    # q线：从对角线(x_F, x_F)到交点(x_int, y_int)
-    plt.plot([x_F, x_int], [x_F, y_int], 'm--', linewidth=2, label='q-line')
-    # 保存交点坐标到mt_instance中供后续使用
-    mt_instance.intersection_point = (x_int, y_int)
+    # 精馏段操作线
+    ax.plot([x_D, x_int], [x_D, y_int], 'b-', label='Rectifying Section', linewidth=2)
+    # 提馏段操作线
+    ax.plot([x_W, x_int], [x_W, y_int], 'r-', label='Stripping Section', linewidth=2)
+    # q线
+    ax.plot([x_F, x_int], [x_F, y_int], 'purple', linestyle='--', label='q-line', linewidth=1.5)
 
-    # # 精馏段操作线
-    # x_rectifying = np.linspace(x_F, x_D, 100)
-    # y_rectifying = mt_instance.L_over_V * x_rectifying + mt_instance.D_xD_over_V
-    # plt.plot(x_rectifying, y_rectifying, 'b-', label='Rectifying section OL')
-
-    # # 提馏段操作线
-    # x_stripping = np.linspace(x_W, x_F, 100)
-    # y_stripping = mt_instance.L_prime_over_V_prime * x_stripping - mt_instance.W_xW_over_V_prime
-    # plt.plot(x_stripping, y_stripping, 'r-', label='Stripping section OL')
-
-    # # q线
-    # if q == 1:
-    #     plt.plot([x_F, x_F], [x_F, vle.get_y_by_x(x_F)], 'm--', label='q-line (Saturated liquid)')
-    # elif q == 0:
-    #     plt.plot([x_F, vle.get_x_by_y(x_F)], [x_F, x_F], 'm--', label='q-line (Saturated vapor)')
-    # else:
-    #     y_intersect = mt_instance.L_over_V * x_F + mt_instance.D_xD_over_V
-    #     plt.plot([x_F, (y_intersect - (q / (q - 1)) * x_F) / (1 - q / (q - 1))], [y_intersect, y_intersect - (q / (q - 1)) * (y_intersect - x_F)], 'm--', label='q-line')
-
-    # 3. 绘制理论塔板梯级
-    # if plot_stages:
-    #     stages_df = mt_instance.calculate_stages(start_from='top', murphree_efficiency=1.0)
-    #     for i in range(len(stages_df) - 1):
-    #         x1 = stages_df['x_liquid'].iloc[i]
-    #         y1 = stages_df['y_vapor'].iloc[i]
-    #         x2 = stages_df['x_liquid'].iloc[i+1]
-    #         y2 = stages_df['y_vapor'].iloc[i+1]
-            
-    #         # 水平线: (x_n, y_n) -> (x_{n+1}, y_n)
-    #         plt.plot([x1, x2], [y1, y1], 'k-', alpha=0.7)
-    #         # 垂直线: (x_{n+1}, y_n) -> (x_{n+1}, y_{n+1})
-    #         plt.plot([x2, x2], [y1, y2], 'k-', alpha=0.7)
-    #     # 标记塔板号
-    #     for i, row in stages_df.iterrows():
-    #         plt.text(row['x_liquid'], row['y_vapor'], str(row['stage']), fontsize=8, ha='center', va='bottom')
+    # 3. 准备并绘制理论塔板阶梯
     if plot_stages:
-        stages_df = mt_instance.calculate_stages(start_from='top', murphree_efficiency=1.0)
+        stages_df = mt_instance.calculate_stages(start_from="top")
+        stage_x = []
+        stage_y = []
+
+        # 假设 stages_df 包含操作线上的点
+        if not stages_df.empty:
+            # 添加第一个点，作为路径的起点
+            stage_x.append(stages_df['x_liquid'].iloc[0])
+            stage_y.append(stages_df['y_vapor'].iloc[0])
+
+            for i in range(len(stages_df) - 1):
+                x_start = stages_df['x_liquid'].iloc[i]
+                y_start = stages_df['y_vapor'].iloc[i]
+                x_end = stages_df['x_liquid'].iloc[i+1]
+                y_end = stages_df['y_vapor'].iloc[i+1]
+
+                # 路径: (x_start, y_start) -> (x_start, y_end) -> (x_end, y_end)
+                # 顶点1: 垂直移动后的点
+                stage_x.append(x_start)
+                stage_y.append(y_end)
+                
+                # 顶点2: 水平移动后的点 (即下一个操作线上的点)
+                stage_x.append(x_end)
+                stage_y.append(y_end)
+
+            # 添加最后一个点，作为路径的终点
+            stage_x.append(stages_df['x_liquid'].iloc[-1])
+            stage_y.append(stages_df['x_liquid'].iloc[-1])
+
+        # 绘制阶梯线
+        ax.plot(stage_x, stage_y, 'g-', label='Theoretical Stages', linewidth=1.5, alpha=0.7)
         
-        # 简单的修正：确保阶梯在平衡线和操作线之间
-        for i in range(len(stages_df)):
-            x = stages_df['x_liquid'].iloc[i]
-            y = stages_df['y_vapor'].iloc[i]
-            
-            if i == 0:
-                # 第一块板：从操作线开始
-                # 假设你知道塔顶组成 xD
-                x_prev = stages_df['x_liquid'].iloc[0]  # 需要替换为你的塔顶液相组成
-                y_prev = stages_df['y_vapor'].iloc[0]  # 需要替换为你的塔顶气相组成（对于全凝器，yD = xD）
-            else:
-                # 使用前一块板的平衡点
-                x_prev = stages_df['x_liquid'].iloc[i-1]
-                y_prev = stages_df['y_vapor'].iloc[i-1]
-            
-            # 绘制阶梯
-            # 水平线
-            plt.plot([x_prev, x], [y_prev, y_prev], 'k-', alpha=0.7)
-            # 垂直线  
-            plt.plot([x, x], [y_prev, y], 'k-', alpha=0.7)
-        
-        # 标记塔板号
-        for i, row in stages_df.iterrows():
-            plt.text(row['x_liquid'], row['y_vapor'], str(row['stage']), 
-                    fontsize=8, ha='center', va='bottom', bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7))
+        # 添加塔板编号
+        stage_numbers_x = stages_df['x_liquid'].iloc[:-1]
+        stage_numbers_y = stages_df['y_vapor'].iloc[1:]
+        for i, (x, y) in enumerate(zip(stage_numbers_x, stage_numbers_y)):
+            ax.text(x, y, f" {i+1}", fontsize=8, verticalalignment='center',
+                   horizontalalignment='left', color='darkgreen')
 
     # 4. 标记重要点
-    plt.plot(x_D, x_D, 'bo', markersize=8, label=f'$x_D={x_D:.3f}$')
-    plt.plot(x_W, x_W, 'ro', markersize=8, label=f'$x_W={x_W:.3f}$')
-    plt.plot(x_F, x_F, 'mo', markersize=8, label=f'$x_F={x_F:.3f}$')
+    ax.plot(x_D, x_D, 'bo', markersize=8, label=f'x_D={x_D:.3f}')
+    ax.plot(x_W, x_W, 'ro', markersize=8, label=f'x_W={x_W:.3f}')
+    ax.plot(x_F, x_F, 'o', color='purple', markersize=8, label=f'x_F={x_F:.3f}')
 
-    # 5. 设置图表样式
+    # 5. 更新图表布局
     if title is None:
         title = f'McCabe-Thiele Diagram for {vle.name}'
     
     comp_a = vle.components[0]
-    plt.title(title, fontsize=14, fontweight='bold')
-    plt.xlabel(f'Liquid Mole Fraction of {comp_a} (x)', fontsize=12)
-    plt.ylabel(f'Vapor Mole Fraction of {comp_a} (y)', fontsize=12)
-    plt.xlim(min(0.0,x_int-0.05), 1.0)
-    plt.ylim(min(0.0,y_int-0.05), 1.0)
-    plt.legend(loc='best', fontsize=10)
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.gca().set_aspect('equal', adjustable='box')
     
+    # 设置坐标轴
+    ax.set_xlabel(f"Liquid Phase Mole Fraction ({comp_a}) (x)", fontsize=12)
+    ax.set_ylabel(f"Vapor Phase Mole Fraction ({comp_a}) (y)", fontsize=12)
+    ax.set_title(title, fontsize=14, fontweight='bold')
+    
+    # 设置坐标轴范围
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    
+    # 设置网格
+    ax.grid(True, alpha=0.3)
+    
+    # 设置等比例
+    ax.set_aspect('equal')
+    
+    # 添加图例
+    ax.legend(loc='upper left', fontsize=10)
+
+    # 如果要求显示，则显示图表
     if show:
         plt.tight_layout()
         plt.show()
+    
+    return fig, ax
+
+    
 
 def plot_fugacity_results(pressures, fugacities, chemical_potentials, fluid_name, temp_k):
     """
