@@ -8,3 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Vscode config
+.vscode
+
+# test
+
+homework
+
+
