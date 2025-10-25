@@ -1,13 +1,32 @@
 # cheme-toolkit
 
+[![PyPI - Version](https://img.shields.io/pypi/v/cheme-toolkit)](https://pypi.org/project/cheme-toolkit/)
+[![GitHub Issues](https://img.shields.io/github/issues/Grtresy/chemetk)](https://github.com/Grtresy/chemetk/issues)
+[![License](https://img.shields.io/github/license/Grtresy/chemetk)](LICENSE)
+
+
 cheme-toolkit 是一个为化学工程计算设计的工具包，提供了气液平衡数据处理、精馏塔计算、热力学性质计算、可视化绘图以及 Web 应用等功能，方便化学工程相关的计算与模拟工作。
+
+## 安装方法
+
+### 从PyPI安装
+
+``` 
+pip install cheme-toolkit
+```
+
+### 从仓库安装
+
+``` 
+pip install git+https://github.com/Grtresy/chemetk.git@master
+```
 
 ## 功能介绍
 
 ### 1. 气液平衡 (VLE) 数据处理
 - 能够读取和解析 JSON 格式的气液平衡数据（例如 methanol_water_vle.json）。
 - 核心类是 `chemetk.thermo.vle.VLE`，它加载数据后，可以根据液相组成 $x$ 插值计算出对应的气相组成 $y$、温度 $T$ 和相对挥发度 $\alpha$。
-- 提供了一个数据文件管理器 (`chemetk.io.vle_data_manager.VLEDataManager`) 和便捷函数如 `chemetk.io.get_vle_file_path` 来自动发现和加载 `data` 目录下的 VLE 数据。
+- 提供了一个数据文件管理器 (`chemetk.io.vle_datamanager.VLEManager`) 来自动发现和加载 `data` 目录下的 VLE 数据。
 
 ### 2. 精馏塔计算 (McCabe-Thiele 法)
 - 核心类是 `chemetk.unit_ops.distillation.McCabeThiele`，它基于 `VLE` 数据进行逐板计算。
@@ -15,7 +34,7 @@ cheme-toolkit 是一个为化学工程计算设计的工具包，提供了气液
 - 能够计算理论塔板数（包括小数理论塔板数）并打印详细的计算结果摘要。
 
 ### 3. 热力学性质计算 (逸度)
-- 可以从 NIST Webbook 获取指定物质在恒温下的 P-V-T 数据（使用 `chemetk.io.nist_webbook.fetch_isotherm_data`）。
+- 可以从 NIST Webbook 获取指定物质在恒温下的 P-V-T 数据（使用 `chemetk.io.nist.fetch_isotherm_data`）。
 - 能够根据 P-V 数据通过积分计算逸度（`fugacity`）和化学势（使用 `chemetk.thermo.fugacity.calculate_fugacity_from_pv_data`）。
 
 ### 4. 可视化绘图
@@ -26,6 +45,8 @@ cheme-toolkit 是一个为化学工程计算设计的工具包，提供了气液
 - 包含一个基于 Dash 的交互式 Web 应用 (chemetk/web/app.py)，用于在线模拟 McCabe-Thiele 精馏过程。用户可以在网页上输入参数并实时看到计算结果和图表。
 
 ## 使用范例
+
+参考`/tests`
 
 ### 范例 1: McCabe-Thiele 精馏计算
 这个例子展示了如何进行精馏塔的理论塔板数计算和绘图。
