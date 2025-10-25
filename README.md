@@ -31,8 +31,9 @@ cheme-toolkit 是一个为化学工程计算设计的工具包，提供了气液
 这个例子展示了如何进行精馏塔的理论塔板数计算和绘图。
 
 ```python
-from chemetk import VLE, McCabeThiele, plot_mccabe_thiele
-from chemetk.io import get_vle_file_path
+from chemetk import VLE, McCabeThiele, plot_mccabe_thiele,VLEManager
+
+vle_manager = VLEManager()
 
 # 1. 定义问题参数
 F, x_F = 100, 0.48
@@ -43,7 +44,7 @@ R = 2.0
 
 # 2. 加载VLE数据
 # 使用io模块的函数获取数据文件路径
-data_path = get_vle_file_path("methanol_water_vle")
+data_path = vle_manager.get_file_path_by_filename("methanol_water_vle")
 vle = VLE(data_path=data_path)
 
 # 3. 初始化McCabeThiele类
@@ -65,7 +66,7 @@ fig.show()
 这个例子展示了如何从 NIST 获取数据，并计算逸度。
 
 ```python
-from chemetk.io.nist_webbook import fetch_isotherm_data
+from chemetk.io.nist_datamanager import fetch_isotherm_data
 from chemetk.thermo.fugacity import calculate_fugacity_from_pv_data
 from chemetk.visualization.plotting import plot_fugacity_results
 import os

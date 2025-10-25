@@ -61,7 +61,7 @@ def create_layout():
                 ], className="parameter-group slider-group"),
 
                 # 添加一个明确的计算按钮
-                html.Button('开始计算', id='run-simulation-button', n_clicks=0, className='run-button'),
+                # html.Button('开始计算', id='run-simulation-button', n_clicks=0, className='run-button'),
 
             ], className="control-panel card-style"), # 添加 'card-style'
 

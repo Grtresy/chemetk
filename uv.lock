@@ -296,13 +296,14 @@ wheels = [
 [[package]]
 name = "cheme-toolkit"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "dash" },
     { name = "matplotlib" },
     { name = "notebook" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "platformdirs" },
     { name = "scipy" },
 ]
 
@@ -313,6 +314,7 @@ requires-dist = [
     { name = "notebook", specifier = ">=7.4.7" },
     { name = "numpy", specifier = ">=2.3.3" },
     { name = "pandas", specifier = ">=2.3.3" },
+    { name = "platformdirs", specifier = ">=4.5.0" },
     { name = "scipy", specifier = ">=1.16.2" },
 ]
 

@@ -4,7 +4,14 @@ import os
 
 # 假设chemetk包在Python路径中
 # 在VS Code中，如果根目录是ChemicalEngineeringToolkits，通常会自动识别
-from chemetk.io.nist_webbook import fetch_isotherm_data
+from chemetk.io.paths import set_user_data_dir
+
+# 获取当前脚本所在目录的绝对路径
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 设置用户数据目录为当前脚本目录下的 .chemetk_data 子目录(必须在导入其他模块之前设置)
+set_user_data_dir(os.path.join(current_dir, ".chemetk_data"))
+
+from chemetk.io.nist_datamanager import fetch_isotherm_data
 from chemetk.thermo.fugacity import calculate_fugacity_from_pv_data
 from chemetk.visualization.plotting import plot_fugacity_results
 
@@ -52,8 +59,6 @@ def main():
         temp_k=T
     )
     
-    # 获取当前脚本所在目录的绝对路径
-    current_dir = os.path.dirname(os.path.abspath(__file__))
     # 拼接文件名，得到完整保存路径
     save_path = os.path.join(current_dir, 'fugacity_chemical_potential_from_chemetk.png')
 

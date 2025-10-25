@@ -1,10 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0","wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "cheme-toolkit"
-version = "0.1.0"
+authors = [{name = "Grtresy" , email = "ssk23@mails.tsinghua.edu.cn"}]
 description = "cheme-toolkit 是一个为化学工程计算设计的工具包，提供了气液平衡数据处理、精馏塔计算、热力学性质计算、可视化绘图以及 Web 应用等功能，方便化学工程相关的计算与模拟工作。"
 readme = "README.md"
-authors = [{name = "Grtresy" , email = "ssk23@mails.tsinghua.edu.cn"}]
-license = { file = "LICENSE" }
 requires-python = ">=3.11"
 dependencies = [
     "dash>=3.2.0",
@@ -12,11 +14,14 @@ dependencies = [
     "notebook>=7.4.7",
     "numpy>=2.3.3",
     "pandas>=2.3.3",
+    "platformdirs>=4.5.0",
     "scipy>=1.16.2",
 ]
+version = "0.1.0"
+license = "GPL-3.0-or-later"
 
 [project.urls]
 Repository = "https://github.com/Grtresy/chemetk"
 
-[tool.setuptools]
-packages = ["chemetk"]  # 明确列出要包含的包
+[tool.setuptools.package-data]
+"chemetk.data" = ["**"]
